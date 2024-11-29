@@ -1,0 +1,23 @@
+---
+Checks: >
+  -*,
+  bugprone-*,
+  -bugprone-assignment-in-if-condition,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-implicit-widening-of-multiplication-result,
+  -bugprone-macro-parentheses,
+  clang-analyzer-*,
+  -clang-analyzer-cplusplus-*,
+  -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
+  misc-*,
+  modernize-*,
+  performance-*,
+  -performance-enum-size,
+  portability-*,
+  readability-*,
+  -readability-identifier-length,
+  -readability-magic-numbers
+CheckOptions:
+  misc-include-cleaner.IgnoreHeaders: /_[^/]+\.h$;^_[^/]+\.h$
+  readability-braces-around-statements.ShortStatementLines: 2
+  readability-function-cognitive-complexity.IgnoreMacros: true
