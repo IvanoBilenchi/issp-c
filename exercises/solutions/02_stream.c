@@ -58,12 +58,19 @@ bool write_file(char const *path, struct Buffer const *buf) {
 // The state is passed by pointer to allow the function to update it, which is necessary for
 // generating a sequence of different numbers.
 uint64_t prng(uint64_t *state) {
-    return *state;
+    uint64_t x = *state;
+    x ^= x << 13;
+    x ^= x >> 7;
+    x ^= x << 17;
+    return *state = x;
 }
 
 uint64_t hash(struct Buffer const *buf) {
-    // You can take this from the previous exercise.
-    return 0xFFFFFFFF;
+    uint64_t hash = 5381;
+    for (size_t i = 0; i < buf->size; i++) {
+        hash = (hash << 5U) + hash + buf->data[i];
+    }
+    return hash;
 }
 
 // Encrypts or decrypts the buffer using the stream cipher.
@@ -72,7 +79,12 @@ uint64_t hash(struct Buffer const *buf) {
 // Hint: since the PRNG generates 64-bit numbers, you can use the lower 8 bits of each
 //       generated number as the keystream byte.
 void crypt(struct Buffer *buf, struct Buffer const *key) {
-    // Implement.
+    uint64_t state = hash(key);
+    if (!state) state = 0xFFFFFFFF; // A zero state will generate a keystream of zeros.
+    for (size_t i = 0; i < buf->size; i++) {
+        uint8_t key_byte = prng(&state) & 0xFF;
+        buf->data[i] ^= key_byte;
+    }
 }
 
 int main(int argc, char *argv[]) {
@@ -85,14 +97,34 @@ int main(int argc, char *argv[]) {
     char const *output_path = argv[2];
     char const *key = argv[3];
 
-    // Hint: you can use strlen to get the length of the key string.
-    //       sizeof(key) will return the size of the pointer, not the length of the string.
-
     // 1. Read the input file into a suitably sized, dynamically allocated buffer.
+    size_t size = get_file_size(input_path);
+    if (size == 0) {
+        printf("Failed to get file size\n");
+        return 1;
+    }
 
-    // 2. Encrypt/decrypt the buffer containing the file data.
+    struct Buffer buffer = { .size = size, .data = malloc(size) };
+    if (buffer.data == NULL) {
+        printf("Failed to allocate memory\n");
+        return 1;
+    }
+
+    if (!read_file(input_path, &buffer)) {
+        printf("Failed to read file\n");
+        return 1;
+    }
+
+    // 2. Encrypt/decrypt the buffer using the stream cipher.
+    struct Buffer key_buf = { .size = strlen(key), .data = (uint8_t *)key };
+    crypt(&buffer, &key_buf);
+
+    if (!write_file(output_path, &buffer)) {
+        printf("Failed to write file\n");
+        return 1;
+    }
 
     // 3. Remember to release any allocated memory.
-
+    free(buffer.data);
     return 0;
 }

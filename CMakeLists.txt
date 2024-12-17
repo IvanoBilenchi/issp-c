@@ -19,18 +19,21 @@ set(ISSP_HACKMES_DIR "${ISSP_PROJECT_DIR}/hackmes")
 
 # Target settings
 
-set(ISSP_COMPILE_FEATURES c_std_11)
-
-if(MSVC)
-    set(ISSP_WARNING_OPTIONS /W4 /wd4200 /wd4996)
-else()
-    set(ISSP_WARNING_OPTIONS -Wall -Wextra)
-    if(ISSP_SANITIZERS)
-        set(ISSP_SANITIZER_OPTIONS "-fsanitize=address,undefined")
-    endif()
-endif()
+function(generate_targets TARGET_DIR PREFIX)
+    file(GLOB TARGET_SOURCES CONFIGURE_DEPENDS "${TARGET_DIR}/*.c")
+    foreach(TARGET_SOURCE ${TARGET_SOURCES})
+        get_filename_component(TARGET "${TARGET_SOURCE}" NAME_WE)
+        string(REPLACE "_" "-" TARGET "${TARGET}")
+        string(PREPEND TARGET "${PREFIX}")
+        add_executable("${TARGET}")
+        target_sources("${TARGET}" PRIVATE "${TARGET_SOURCE}")
+        target_compile_features("${TARGET}" PRIVATE c_std_11)
+    endforeach()
+endfunction()
 
 # Sources
 
-add_subdirectory("${ISSP_EXAMPLES_DIR}")
-add_subdirectory("${ISSP_EXERCISES_DIR}")
+generate_targets("${ISSP_EXAMPLES_DIR}" "example-")
+generate_targets("${ISSP_EXERCISES_DIR}" "exercise-")
+generate_targets("${ISSP_SOLUTIONS_DIR}" "solution-")
+generate_targets("${ISSP_HACKMES_DIR}" "hackme-")

@@ -13,8 +13,8 @@ struct Buffer {
     uint8_t *data;
 };
 
+// Compute a 64-bit hash of the buffer.
 uint64_t hash(struct Buffer const *buf) {
-    // Implement.
     return 0xFFFFFFFF;
 }
 
@@ -22,13 +22,15 @@ void xor_crypt(struct Buffer *buf, struct Buffer const *key) {
     // You can take this from the previous exercise.
 }
 
+// Compute the MAC of the data using the key.
 uint64_t compute_mac(struct Buffer const *data, struct Buffer const *key) {
-    // Implement.
     return 0xFFFFFFFF;
 }
 
+// Verify that the MAC of the data matches the given MAC.
+// You can either decrypt the MAC and compare it to the hash of the data,
+// or compute the MAC again and compare it to the given MAC.
 bool verify_mac(struct Buffer const *data, struct Buffer const *key, uint64_t mac) {
-    // Implement.
     return false;
 }
 
