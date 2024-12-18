@@ -13,8 +13,7 @@ primitive, is highly insecure and only has educational value.
 
 ### Setting up the project
 
-> **Note:** all the C programs in this repository are contained in a single C file.
->           If you are having trouble setting up the build environment or compiling,
+> **Note:** If you are having trouble setting up the build environment or compiling,
 >           consider using one of the many available online C editors/compilers.
 
 - Install any reasonably up-to-date C compiler.

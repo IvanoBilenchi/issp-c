@@ -20,14 +20,17 @@ set(ISSP_HACKMES_DIR "${ISSP_PROJECT_DIR}/hackmes")
 # Target settings
 
 function(generate_targets TARGET_DIR PREFIX)
+    set(UTIL_DIR "${TARGET_DIR}/util")
     file(GLOB TARGET_SOURCES CONFIGURE_DEPENDS "${TARGET_DIR}/*.c")
+    file(GLOB UTIL_SOURCES CONFIGURE_DEPENDS "${UTIL_DIR}/*.c")
     foreach(TARGET_SOURCE ${TARGET_SOURCES})
         get_filename_component(TARGET "${TARGET_SOURCE}" NAME_WE)
         string(REPLACE "_" "-" TARGET "${TARGET}")
         string(PREPEND TARGET "${PREFIX}")
         add_executable("${TARGET}")
-        target_sources("${TARGET}" PRIVATE "${TARGET_SOURCE}")
+        target_sources("${TARGET}" PRIVATE "${TARGET_SOURCE}" ${UTIL_SOURCES})
         target_compile_features("${TARGET}" PRIVATE c_std_11)
+        target_include_directories("${TARGET}" PRIVATE "${UTIL_DIR}")
     endforeach()
 endfunction()
 

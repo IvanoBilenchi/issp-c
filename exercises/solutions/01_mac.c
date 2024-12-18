@@ -4,6 +4,7 @@
 // Hint: you can choose any hash function you like, even a non-cryptographic one.
 //       One simple and efficient hash function is djb2: http://www.cse.yorku.ca/~oz/hash.html
 
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -55,7 +56,7 @@ int main(void) {
 
     // 1. Compute the MAC of the message.
     uint64_t mac = compute_mac(&data, &key_buf);
-    printf("MAC: 0x%016llx\n", mac);
+    printf("MAC: 0x%016" PRIx64 "\n", mac);
 
     // 2. Verify the MAC of the message.
     if (verify_mac(&data, &key_buf, mac)) {
