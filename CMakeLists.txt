@@ -5,10 +5,6 @@ project(issp
         HOMEPAGE_URL "https://github.com/IvanoBilenchi/issp-c"
         LANGUAGES C)
 
-# Cache variables
-
-option(ISSP_SANITIZERS "Enable sanitizers." OFF)
-
 # Directories
 
 set(ISSP_PROJECT_DIR "${CMAKE_CURRENT_LIST_DIR}")
