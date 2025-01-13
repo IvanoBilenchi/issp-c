@@ -1,0 +1,24 @@
+1. The program is affected by a buffer overflow vulnerability.
+
+The problematic line is:
+
+user_input("Password", data.pass, sizeof(data));
+
+The last parameter should instead be `sizeof(data.pass) - 1` (15 bytes + the NULL terminator).
+Since it is considering the size of the whole `data` struct (40 bytes), this allows us to overflow
+the buffer by 24 bytes, writing within the bounds of `canary`, `authenticated`, and beyond.
+
+2. The program contains an application-level implementation of canaries, to mitigate
+buffer overflow attacks. To authenticate as the administrator, we therefore need to find
+the canary value, and then provide the following input:
+
+[16 arbitrary bytes] [4 bytes canary] [4 bytes, at least one non-zero]
+
+Since the program has debug logging, we can just look at the layout of the data struct
+to find out the canary value. We know that the `data` struct ends with the `authenticated` flag,
+which is 4 bytes long. The previous 4 bytes will therefore contain the canary value.
+
+Example (last 8 bytes of data: 22 65 1e 2e 00 00 00 00)
+-------------------------------------------------------
+Password: 1234567890123456\22\65\1e\2eX
+Welcome, admin!

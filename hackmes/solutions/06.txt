@@ -1,0 +1,31 @@
+1. The program is affected by a format string vulnerability.
+
+The problematic line is:
+
+printf(buf);
+
+Since `buf` is user-controlled, this allows us to read the contents of the stack by providing
+a maliciously crafted password that contains format string specifiers. Since the `printf` function
+is invoked with no additional arguments, each provided format specifier will cause `printf` to
+interpret a slice of stack memory as if it were an argument.
+
+The bug can be fixed by changing the line to: `printf("%s", buf);`
+
+2. We know that the PIN is an 8-digit number, so one strategy would be to print memory
+as a sequence of unsigned integers, and try any 8-digit number printed to the console.
+
+As an example, the "%lu %lu %lu %lu %lu" string will leak 40 bytes of stack memory formatted
+as 5 unsigned long integers. If one of them has 8 digits, it is a candidate PIN, so we can re-run
+the program and try it out.
+
+Example
+-------
+
+> First run:
+8-digit PIN: %lu %lu %lu %lu %lu
+4364908704 120986420 6101985832 61930412 61930412 is not the correct PIN!
+> Notice that the 4th value is an 8-digit number.
+
+> Second run:
+8-digit PIN: 61930412
+Welcome, admin!
